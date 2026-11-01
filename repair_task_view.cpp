@@ -60,8 +60,13 @@ int main()
 
     // ===== Resolve these TODOs later (Part D) =====
     // TODO (Part D): Call mergeSortView for the complete logical range.
+    mergeSortView(view, temporary, 0, TASK_COUNT - 1);
     // TODO (Part D): Display the sorted view with a descriptive heading.
+    cout << "Sorted by deadline and duration:" << endl;
+    displayView(view, TASK_COUNT);
     // TODO (Part D): Display tasks again to prove that arrival order did not change.
+    cout << "Original arrival order after sorting:" << endl;
+    displayOriginal(tasks, TASK_COUNT);
 
     return 0;
 }
@@ -100,6 +105,13 @@ bool comesBeforeOrEqual(const RepairTask *left, const RepairTask *right)
 void mergeSortView(RepairTask *view[], RepairTask *temporary[], int first, int last)
 {
     // TODO (Part D): Implement recursive merge sort using inclusive indices.
+    if (first < last)
+    {
+        int middle = first + (last - first) / 2;
+        mergeSortView(view, temporary, first, middle);
+        mergeSortView(view, temporary, middle + 1, last);
+        mergeTaskView(view, temporary, first, middle, last);
+    }
 }
 
 void mergeTaskView(RepairTask *view[], RepairTask *temporary[],
@@ -107,6 +119,36 @@ void mergeTaskView(RepairTask *view[], RepairTask *temporary[],
 {
     // TODO (Part D): Merge two sorted segments using comesBeforeOrEqual.
     // TODO (Part D): Preserve pending pointers and copy the merged segment back.
+    int leftIndex = first;
+    int rightIndex = middle + 1;
+    int tempIndex = first;
+
+    while (leftIndex <= middle && rightIndex <= last)
+    {
+        if (comesBeforeOrEqual(view[leftIndex], view[rightIndex]))
+        {
+            temporary[tempIndex++] = view[leftIndex++];
+        }
+        else
+        {
+            temporary[tempIndex++] = view[rightIndex++];
+        }
+    }
+
+    while (leftIndex <= middle)
+    {
+        temporary[tempIndex++] = view[leftIndex++];
+    }
+
+    while (rightIndex <= last)
+    {
+        temporary[tempIndex++] = view[rightIndex++];
+    }
+
+    for (int i = first; i <= last; i++)
+    {
+        view[i] = temporary[i];
+    }
 }
 
 void displayOriginal(const RepairTask tasks[], int count)
@@ -142,17 +184,38 @@ void displayView(RepairTask *view[], int count)
  * D1 - Recursive ranges
  * Show first, last, middle, and the base-case evaluations along the first branch
  * starting at 0..7. Identify where execution resumes after the call for 0..0.
- * Answer:
+ * Answer: The first call is for the range 0..7, with middle = 3.
+ * Then the algorithm recurses on 0..3 and 4..7.
+ * Inside 0..3, the next calls are 0..1 and 2..3.
+ * Inside 0..1, it calls 0..0 and 1..1.
+ * The base case is reached for 0..0, where first == last, so the function returns immediately.
+ * Execution resumes by unwinding back through 0..1, then 0..3, and finally back to 0..7.
+ * This is the normal recursive return path after each smaller range finishes.
  *
  * D2 - Stable ties
  * Identify both pairs of tasks that tie in the two sort fields. Explain how the
  * comparator and the merge preserve their arrival order.
- * Answer:
+ * Answer: The two equal pairs are RT-102 and RT-107, and RT-103 and RT-105.
+ * Each pair shares the same daysUntilDue and minutesNeeded values.
+ * The comparator does not reorder equal items because it returns true when both fields are equal,
+ * so a left item stays before a right item in a tie.
+ * In mergeTaskView, when comesBeforeOrEqual(view[leftIndex], view[rightIndex]) is true,
+ * the algorithm copies the left pointer first and advances only the left side.
+ * This preserves the original arrival order for equal tasks throughout the merge.
  *
  * D3 - Time, space, and original data
  * Give the sorting time and auxiliary-space order of this pointer-array version.
  * Compare with the linked-list sort in Part B and explain why the original task
  * storage order is preserved here but the node order changes in Part B.
  * Answer:
+ * Time Complexity: O(n log n) for merge sort.
+ * Auxiliary Space Complexity: O(n) for the temporary pointer array used during merging.
+ *
+ * This matches the expected behavior of a merge sort on a pointer view.
+ * In Part B, the linked-list version rearranges the nodes themselves by redirecting next pointers,
+ * so the node order changes after sorting.
+ * Here, the tasks remain in their original storage array, and only the pointer-array view is reordered.
+ * Because the view contains addresses to the existing tasks, the original task records are not moved,
+ * The only thing that changes is their ordering in the view.
  *
  */
