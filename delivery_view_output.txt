@@ -1,0 +1,15 @@
+Original orders before building view:
+Order ID: 101 | Type: Delivery | Status: Pending | Building: Building A | Priority: 1
+Order ID: 102 | Type: Pickup | Status: Completed | Building: Building B | Priority: 2
+Order ID: 103 | Type: Delivery | Status: In Progress | Building: Building C | Priority: 3
+Order ID: 104 | Type: Pickup | Status: Pending | Building: Building D | Priority: 4
+Active delivery orders in the view:2
+Order ID: 101 | Type: Delivery | Status: Pending | Building: Building A | Priority: 1
+Order ID: 103 | Type: Delivery | Status: In Progress | Building: Building C | Priority: 3
+Orders after building view (should be unchanged):
+Order ID: 101 | Type: Delivery | Status: Pending | Building: Building A | Priority: 1
+Order ID: 102 | Type: Pickup | Status: Completed | Building: Building B | Priority: 2
+Order ID: 103 | Type: Delivery | Status: In Progress | Building: Building C | Priority: 3
+Order ID: 104 | Type: Pickup | Status: Pending | Building: Building D | Priority: 4
+Verifying that the original orders remain unchanged:
+All original orders remain unchanged.
